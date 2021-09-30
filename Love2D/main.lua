@@ -2,7 +2,16 @@ function love.load()
    love.window.setTitle("Pong")
    love.window.setMode(1600, 800)
 
+   puntuacionJ1 = 0
+   puntuacionJ2 = 0
+
     reset("J1")
+
+    fuente = love.graphics.newFont(70)
+
+    sonidoPong = love.audio.newSource("pong.ogg", "stream")
+
+    sonidoPunto = love.audio.newSource("punto.ogg", "stream")
 
 end
 
@@ -14,7 +23,14 @@ function love.update(dt)
 end
 
 function love.draw()
+
+    love.graphics.setFont(fuente)
+
     love.graphics.setColor(255, 255, 255)
+
+    love.graphics.print(puntuacionJ1, (love.graphics.getWidth() / 2) - 200, 50)
+    love.graphics.print(puntuacionJ2, (love.graphics.getWidth() / 2) + 200, 50)
+
     love.graphics.rectangle("fill", barritaJ1.x, barritaJ1.y, barritaJ1.ancho, barritaJ1.altura)
     love.graphics.rectangle("fill", barritaJ2.x, barritaJ2.y, barritaJ2.ancho, barritaJ2.altura)
 
@@ -55,6 +71,7 @@ function rebotarPelota(pelota)
         and (pelota.x) <= (barritaJ1.x + barritaJ1.ancho)
         and (pelota.y - pelota.radio) <= (barritaJ1.y + barritaJ1.altura)
         and (pelota.y - pelota.radio) >= (barritaJ1.y) then
+            sonidoPong:play()
             pelota.arriba = false
         end
 
@@ -62,6 +79,7 @@ function rebotarPelota(pelota)
         and (pelota.x) <= (barritaJ1.x + barritaJ1.ancho)
         and (pelota.y + pelota.radio) >= (barritaJ1.y)
         and (pelota.y + pelota.radio) <= (barritaJ1.y + barritaJ1.altura) then
+            sonidoPong:play()
             pelota.arriba = true
         end
 
@@ -69,6 +87,7 @@ function rebotarPelota(pelota)
         and(pelota.x) <= (barritaJ2.x + barritaJ2.ancho)
         and(pelota.y - pelota.radio) <= (barritaJ2.y + barritaJ2.altura)
         and(pelota.y + pelota.radio) >= (barritaJ2.y) then
+            sonidoPong:play()
             pelota.arriba = false
         end
 
@@ -76,6 +95,7 @@ function rebotarPelota(pelota)
         and (pelota.x) <= (barritaJ2.x + barritaJ2.ancho)
         and (pelota.y + pelota.radio) >= (barritaJ2.y)
         and (pelota.y + pelota.radio) <= (barritaJ2.y + barritaJ2.altura) then
+            sonidoPong:play()
             pelota.arriba = true
         end
 
@@ -83,6 +103,7 @@ function rebotarPelota(pelota)
         and (pelota.x - pelota.radio) >= (barritaJ1.x)
         and (pelota.y) >= (barritaJ1.y)
         and (pelota.y) <= (barritaJ1.y + barritaJ1.altura) then
+            sonidoPong:play()
             pelota.derecha = true
             pelota.velocidad = pelota.velocidad + 1
         end
@@ -91,16 +112,21 @@ function rebotarPelota(pelota)
         and (pelota.x + pelota.radio) <= (barritaJ2.x + barritaJ2.ancho)
         and (pelota.y) >= (barritaJ2.y)
         and (pelota.y) <= (barritaJ2.y + barritaJ2.altura) then
+            sonidoPong:play()
             pelota.derecha = false
             pelota.velocidad = pelota.velocidad + 1
         end
 
     if(pelota.x + pelota.radio) >= love.graphics.getWidth() then
         reset("J1")
+        sonidoPunto:play()
+        puntuacionJ1 = puntuacionJ1 + 1
     end
 
     if(pelota.x - pelota.radio) <= 0 then
         reset("J2")
+        sonidoPunto:play()
+        puntuacionJ2 = puntuacionJ2 + 1
     end
 
     if(pelota.y + pelota.radio) >= love.graphics.getHeight() then
@@ -132,7 +158,13 @@ function reset(jugador_punto)
     pelota.x = love.graphics.getWidth() / 2
     pelota.y = love.graphics.getHeight() / 2
     pelota.radio = 20
-    pelota.derecha = false
+
+    if jugador_punto == "J1" then
+        pelota.derecha = false
+    else
+        pelota.derecha = true
+    end
+
     pelota.arriba = false
     pelota.velocidad = 5
 end
